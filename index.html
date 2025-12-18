@@ -1,0 +1,1462 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>王睿登基 · 动画盛典</title>
+  <style>
+    :root{
+      --bg0:#070812;
+      --bg1:#0b1030;
+      --bg2:#0a0f2a;
+      --gold:#f6d27a;
+      --gold2:#ffefb8;
+      --red:#d83b3b;
+      --ink:#e9ecff;
+      --muted: rgba(233,236,255,.72);
+      --card: rgba(18,22,52,.55);
+      --stroke: rgba(255,255,255,.10);
+      --shadow: 0 18px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+      --max: 1120px;
+      --ease: cubic-bezier(.2,.9,.2,1);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: radial-gradient(1200px 900px at 25% 15%, rgba(121,88,255,.22), transparent 60%),
+                  radial-gradient(900px 800px at 70% 20%, rgba(255,221,120,.14), transparent 55%),
+                  radial-gradient(900px 800px at 65% 80%, rgba(76,210,255,.11), transparent 55%),
+                  linear-gradient(180deg, var(--bg0), var(--bg1) 45%, var(--bg2));
+      color: var(--ink);
+      overflow-x:hidden;
+    }
+
+    a{color:inherit}
+
+    .noise{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.06;
+      mix-blend-mode:overlay;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+      background-size: 260px 260px;
+    }
+
+    #confetti{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index: 40;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(7,8,18,.75), rgba(7,8,18,.35));
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .nav{
+      max-width: var(--max);
+      margin:0 auto;
+      padding: 14px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 220px;
+    }
+    .sigil{
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 30% 25%, rgba(255,255,255,.35), transparent 45%),
+                  linear-gradient(135deg, rgba(255,233,167,.95), rgba(245,182,74,.55) 45%, rgba(127,84,255,.45));
+      box-shadow: 0 14px 28px rgba(0,0,0,.28);
+      position:relative;
+      overflow:hidden;
+    }
+    .sigil::after{
+      content:"";
+      position:absolute;
+      inset:-40% -60%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+      transform: rotate(25deg);
+      animation: sheen 2.8s var(--ease) infinite;
+    }
+    @keyframes sheen{
+      0%{transform:translateX(-40%) rotate(25deg)}
+      100%{transform:translateX(40%) rotate(25deg)}
+    }
+
+    .brand h1{
+      margin:0;
+      font-size: 14px;
+      letter-spacing:.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78);
+    }
+    .brand .sub{
+      margin:0;
+      font-size: 12px;
+      color: rgba(233,236,255,.62);
+    }
+
+    .controls{
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      border: 1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      color: rgba(255,255,255,.88);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      transition: transform .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease);
+      user-select:none;
+      font-weight: 600;
+      letter-spacing:.03em;
+      text-decoration:none;
+    }
+    .btn:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.24)}
+    .btn:active{transform: translateY(0px) scale(.99)}
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.12);
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: rgba(233,236,255,.72);
+      font-size: 12px;
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(246,210,122,.9);
+      box-shadow: 0 0 0 4px rgba(246,210,122,.14);
+    }
+
+    main{
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .hero{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items:stretch;
+      padding-top: 18px;
+    }
+    @media (max-width: 920px){
+      .hero{grid-template-columns: 1fr;}
+      .brand{min-width: unset;}
+    }
+
+    .card{
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(18,22,52,.62), rgba(18,22,52,.38));
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow:hidden;
+      position:relative;
+    }
+
+    .card-pad{padding: 20px;}
+
+    .headline{
+      font-size: clamp(28px, 3.5vw, 44px);
+      line-height: 1.08;
+      margin: 0 0 10px 0;
+      letter-spacing: .02em;
+    }
+
+    .headline span{
+      background: linear-gradient(90deg, rgba(255,255,255,.92), rgba(255,239,184,.92) 45%, rgba(163,140,255,.9));
+      -webkit-background-clip:text;
+      background-clip:text;
+      color: transparent;
+      text-shadow: 0 10px 50px rgba(255,255,255,.06);
+    }
+
+    .lead{margin:0; color: var(--muted); font-size: 14px; line-height:1.7}
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap: 10px;
+      margin-top: 14px;
+      align-items:center;
+    }
+
+    .tip{
+      margin-top: 14px;
+      border-radius: 14px;
+      padding: 12px 12px;
+      border: 1px dashed rgba(255,255,255,.16);
+      color: rgba(233,236,255,.76);
+      background: rgba(0,0,0,.12);
+      display:flex;
+      gap: 10px;
+      align-items:flex-start;
+    }
+    .tip b{color: rgba(255,239,184,.92)}
+
+    .stage-wrap{
+      height: 420px;
+      min-height: 380px;
+      display:grid;
+      place-items:center;
+      position:relative;
+      background: radial-gradient(900px 420px at 50% 65%, rgba(255,239,184,.14), transparent 60%),
+                  radial-gradient(700px 380px at 30% 15%, rgba(163,140,255,.18), transparent 55%),
+                  linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.24));
+    }
+
+    .stage{
+      width: min(520px, 92%);
+      aspect-ratio: 16/10;
+      position:relative;
+      transform-style: preserve-3d;
+      perspective: 800px;
+      filter: drop-shadow(0 30px 80px rgba(0,0,0,.55));
+    }
+
+    .halo{
+      position:absolute;
+      inset: -10% -12%;
+      background: conic-gradient(from 180deg,
+        rgba(255,239,184,.0), rgba(255,239,184,.32), rgba(163,140,255,.22), rgba(255,239,184,.0));
+      filter: blur(0.5px);
+      mask-image: radial-gradient(circle at 50% 50%, black 35%, transparent 66%);
+      opacity: 0;
+      transform: scale(.98);
+    }
+
+    .rays{
+      position:absolute;
+      inset:-28% -28%;
+      background:
+        repeating-conic-gradient(from 0deg,
+          rgba(246,210,122,.0) 0deg,
+          rgba(246,210,122,.12) 4deg,
+          rgba(246,210,122,.0) 8deg);
+      mask-image: radial-gradient(circle at 50% 52%, black 22%, transparent 68%);
+      opacity: 0;
+      transform: rotate(-10deg) scale(.98);
+    }
+
+    .floor{
+      position:absolute;
+      left:50%;
+      bottom:-6%;
+      transform: translateX(-50%);
+      width: 110%;
+      height: 48%;
+      background: radial-gradient(closest-side at 50% 15%, rgba(255,255,255,.16), transparent 70%),
+                  linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.28));
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.10);
+      box-shadow: inset 0 10px 30px rgba(0,0,0,.25);
+      transform-style:preserve-3d;
+    }
+
+    .throne{
+      position:absolute;
+      left:50%;
+      bottom:10%;
+      transform: translateX(-50%);
+      width: 50%;
+      height: 50%;
+    }
+    .throne .back{
+      position:absolute;
+      inset: 0 18% 18% 18%;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,239,184,.18), rgba(255,239,184,.06));
+      border: 1px solid rgba(255,239,184,.24);
+      box-shadow: inset 0 10px 24px rgba(0,0,0,.22);
+    }
+    .throne .seat{
+      position:absolute;
+      left:12%;
+      right:12%;
+      bottom: 6%;
+      height: 28%;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(216,59,59,.40), rgba(216,59,59,.16));
+      border: 1px solid rgba(216,59,59,.34);
+      box-shadow: inset 0 10px 24px rgba(0,0,0,.22);
+    }
+    .throne .arm{
+      position:absolute;
+      bottom: 6%;
+      width: 18%;
+      height: 36%;
+      border-radius: 14px;
+      background: linear-gradient(180deg, rgba(255,239,184,.14), rgba(255,239,184,.06));
+      border: 1px solid rgba(255,239,184,.18);
+    }
+    .throne .arm.left{left: 4%;}
+    .throne .arm.right{right: 4%;}
+    .throne .gem{
+      position:absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.9), rgba(163,140,255,.6));
+      box-shadow: 0 0 0 6px rgba(163,140,255,.16);
+      top: 22%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .king{
+      position:absolute;
+      left:50%;
+      bottom: 18%;
+      transform: translateX(-50%);
+      width: 22%;
+      height: 40%;
+      opacity: 0;
+      filter: drop-shadow(0 16px 30px rgba(0,0,0,.55));
+      transform-origin: 50% 100%;
+    }
+    .king::before{
+      content:"";
+      position:absolute;
+      left: 50%;
+      top: 26%;
+      transform: translateX(-50%);
+      width: 92%;
+      height: 78%;
+      border-radius: 18px 18px 26px 26px;
+      background: linear-gradient(180deg, rgba(255,239,184,.72), rgba(245,182,74,.22) 55%, rgba(0,0,0,0) 100%);
+      border: 1px solid rgba(255,239,184,.22);
+      filter: saturate(1.05);
+      opacity: .95;
+      z-index: 0;
+    }
+    .king::after{
+      content:"";
+      position:absolute;
+      left: 50%;
+      top: 30%;
+      transform: translateX(-50%);
+      width: 112%;
+      height: 92%;
+      border-radius: 26px;
+      background: radial-gradient(120px 90px at 50% 0%, rgba(255,255,255,.18), rgba(255,255,255,0) 70%),
+                  linear-gradient(180deg, rgba(255,239,184,.14), rgba(245,182,74,.10) 45%, rgba(0,0,0,0) 100%);
+      mask-image: radial-gradient(circle at 50% 0%, black 40%, transparent 72%);
+      opacity: .85;
+      z-index: 0;
+    }
+    .king .head{
+      position:absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 34%;
+      aspect-ratio: 1/1;
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.05));
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .king .body{
+      position:absolute;
+      top: 26%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 62%;
+      height: 64%;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(216,59,59,.36), rgba(216,59,59,.16));
+      border: 1px solid rgba(216,59,59,.32);
+      box-shadow: inset 0 14px 24px rgba(0,0,0,.22);
+      z-index: 1;
+    }
+    .king .sash{
+      position:absolute;
+      top: 38%;
+      left: 50%;
+      transform: translateX(-50%) rotate(-10deg);
+      width: 74%;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(246,210,122,.0), rgba(246,210,122,.9), rgba(246,210,122,.0));
+      opacity: .95;
+      z-index: 2;
+    }
+
+    .crown{
+      position:absolute;
+      left:50%;
+      top: 3%;
+      transform: translateX(-50%) translateY(-130px) rotate(-8deg);
+      width: 18%;
+      height: 16%;
+      opacity: 0;
+      filter: drop-shadow(0 16px 26px rgba(0,0,0,.6));
+    }
+    .crown .base{
+      position:absolute;
+      left: 6%;
+      right: 6%;
+      bottom: 0;
+      height: 34%;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,239,184,.92), rgba(245,182,74,.48));
+      border: 1px solid rgba(255,239,184,.34);
+    }
+    .crown .spike{
+      position:absolute;
+      bottom: 22%;
+      width: 22%;
+      height: 62%;
+      background: linear-gradient(180deg, rgba(255,239,184,.98), rgba(245,182,74,.45));
+      clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+      border-radius: 6px;
+      filter: saturate(1.1);
+      border: 1px solid rgba(255,239,184,.22);
+    }
+    .crown .spike:nth-child(2){left: 8%;}
+    .crown .spike:nth-child(3){left: 39%; height: 74%;}
+    .crown .spike:nth-child(4){left: 70%;}
+    .crown .jewel{
+      position:absolute;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      width: 12px;
+      height: 12px;
+      border-radius: 99px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.92), rgba(90,220,255,.58));
+      box-shadow: 0 0 0 7px rgba(90,220,255,.14);
+    }
+
+    .crowd{
+      position:absolute;
+      left: 50%;
+      bottom: 6%;
+      transform: translateX(-50%);
+      width: 88%;
+      height: 26%;
+      opacity: 0;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      gap: 10px;
+      filter: drop-shadow(0 14px 24px rgba(0,0,0,.45));
+    }
+    .person{
+      width: 9%;
+      height: 70%;
+      border-radius: 16px 16px 18px 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.05));
+      transform-origin: 50% 100%;
+    }
+    .person:nth-child(odd){background: linear-gradient(180deg, rgba(163,140,255,.16), rgba(255,255,255,.04));}
+    .person:nth-child(3n){background: linear-gradient(180deg, rgba(216,59,59,.20), rgba(255,255,255,.04));}
+
+    .scroll{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .scene{
+      min-height: 78vh;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-items:center;
+      padding: 18px;
+      scroll-margin-top: 74px;
+    }
+
+    @media (max-width: 980px){
+      .scene{grid-template-columns: 1fr;}
+      .stage-wrap{height: 380px;}
+    }
+
+    .scene .copy{
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(18,22,52,.60), rgba(18,22,52,.34));
+      box-shadow: var(--shadow);
+    }
+
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap: 10px;
+      color: rgba(255,239,184,.88);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .kline{
+      width: 24px;
+      height: 2px;
+      border-radius: 99px;
+      background: linear-gradient(90deg, rgba(255,239,184,.0), rgba(255,239,184,.86));
+    }
+
+    .copy h2{
+      margin: 0 0 10px 0;
+      font-size: 22px;
+      letter-spacing:.02em;
+    }
+    .copy p{margin:0; color: rgba(233,236,255,.74); line-height:1.85; font-size: 14px;}
+
+    .quote{
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,239,184,.18);
+      background: radial-gradient(700px 180px at 20% 10%, rgba(255,239,184,.10), transparent 60%),
+                  rgba(0,0,0,.14);
+      color: rgba(255,255,255,.86);
+      font-weight: 650;
+      letter-spacing:.01em;
+    }
+
+    .tagrow{display:flex; gap: 8px; flex-wrap:wrap; margin-top: 14px;}
+    .tag{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: rgba(233,236,255,.72);
+      font-size: 12px;
+      letter-spacing:.02em;
+    }
+
+    .footer{
+      padding: 26px 0 40px;
+      text-align:center;
+      color: rgba(233,236,255,.52);
+      font-size: 12px;
+    }
+
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip: rect(0,0,0,0);
+      white-space:nowrap;
+      border:0;
+    }
+
+    .fadeup{opacity:0; transform: translateY(10px);}
+
+    .is-active .fadeup{
+      animation: fadeUp .85s var(--ease) both;
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0; transform: translateY(12px)}
+      to{opacity:1; transform: translateY(0)}
+    }
+
+    .is-active .halo{
+      opacity: .95;
+      transform: scale(1);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+    }
+
+    .is-active .rays{
+      opacity: .55;
+      transform: rotate(8deg) scale(1);
+      transition: opacity .9s var(--ease), transform .9s var(--ease);
+      animation: raysSpin 9s linear infinite;
+    }
+
+    @keyframes raysSpin{
+      from{transform: rotate(0deg) scale(1)}
+      to{transform: rotate(360deg) scale(1)}
+    }
+
+    .is-active .king{
+      opacity: 1;
+      animation: kingEnter .95s var(--ease) both;
+    }
+
+    .scene[data-scene="coronation"].is-active .king{
+      animation: kingWalk 1.35s var(--ease) both;
+    }
+
+    .scene[data-scene="coronation"].is-active .king::before,
+    .scene[data-scene="coronation"].is-active .king::after{
+      animation: robeFlutter 1.35s var(--ease) both;
+      transform-origin: 50% 0;
+    }
+
+    @keyframes kingEnter{
+      from{transform: translateX(-50%) translateY(22px) scale(.98); opacity:0}
+      to{transform: translateX(-50%) translateY(0) scale(1); opacity:1}
+    }
+
+    @keyframes kingWalk{
+      0%{transform: translateX(-50%) translateX(-160px) translateY(18px) scale(.96); opacity:0}
+      18%{transform: translateX(-50%) translateX(-120px) translateY(8px) scale(.97); opacity:1}
+      36%{transform: translateX(-50%) translateX(-86px) translateY(12px) scale(.985)}
+      55%{transform: translateX(-50%) translateX(-44px) translateY(6px) scale(1)}
+      72%{transform: translateX(-50%) translateX(-18px) translateY(8px) scale(1)}
+      100%{transform: translateX(-50%) translateX(0px) translateY(0px) scale(1)}
+    }
+
+    @keyframes robeFlutter{
+      0%{filter: saturate(1.0); opacity:.0; transform: translateX(-50%) rotate(-6deg) scaleX(.98)}
+      18%{opacity:.90; transform: translateX(-50%) rotate(6deg) scaleX(1.02)}
+      38%{opacity:.95; transform: translateX(-50%) rotate(-4deg) scaleX(1.00)}
+      58%{opacity:.95; transform: translateX(-50%) rotate(4deg) scaleX(1.02)}
+      78%{opacity:.95; transform: translateX(-50%) rotate(-2deg) scaleX(1.00)}
+      100%{opacity:.90; transform: translateX(-50%) rotate(0deg) scaleX(1.00)}
+    }
+
+    .is-active .crown{
+      opacity: 1;
+      animation: crownDrop 1.15s var(--ease) both;
+    }
+
+    @keyframes crownDrop{
+      0%{transform: translateX(-50%) translateY(-140px) rotate(-10deg); opacity:0}
+      62%{transform: translateX(-50%) translateY(2px) rotate(2deg); opacity:1}
+      78%{transform: translateX(-50%) translateY(-6px) rotate(-2deg)}
+      100%{transform: translateX(-50%) translateY(0px) rotate(0deg)}
+    }
+
+    .is-active .crowd{
+      opacity: 1;
+      transition: opacity .7s var(--ease);
+    }
+
+    .is-cheering .person{
+      animation: cheer .55s var(--ease) infinite alternate;
+    }
+
+    .is-cheering .person:nth-child(2n){animation-duration:.48s}
+    .is-cheering .person:nth-child(3n){animation-duration:.62s}
+
+    @keyframes cheer{
+      from{transform: translateY(0) rotate(-1deg)}
+      to{transform: translateY(-10px) rotate(1deg)}
+    }
+
+    .divider{
+      height: 1px;
+      margin: 8px 0 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent);
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%) translateY(18px);
+      opacity:0;
+      z-index: 60;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(9,10,22,.72);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+      color: rgba(233,236,255,.78);
+      font-size: 12px;
+      max-width: min(92vw, 540px);
+      text-align:center;
+      transition: opacity .25s var(--ease), transform .25s var(--ease);
+      pointer-events:none;
+    }
+    .toast.show{opacity:1; transform: translateX(-50%) translateY(0)}
+
+    @media (prefers-reduced-motion: reduce){
+      *{animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important;}
+      .sigil::after{display:none}
+    }
+
+    .story-hero{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      padding: 18px;
+      align-items:stretch;
+    }
+    @media (max-width: 920px){
+      .story-hero{grid-template-columns: 1fr;}
+    }
+    .panel{
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      background: rgba(0,0,0,.12);
+    }
+    .chips{display:flex; flex-wrap:wrap; gap: 8px; margin-top: 14px;}
+    .chip{padding: 8px 10px; border-radius: 999px; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: rgba(233,236,255,.72); font-size: 12px; letter-spacing:.02em;}
+    .timeline{margin-top: 18px; display:grid; gap: 14px;}
+    .chapter{
+      display:grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      padding: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(18,22,52,.54), rgba(18,22,52,.30));
+      box-shadow: var(--shadow);
+      scroll-margin-top: 78px;
+    }
+    #story{scroll-margin-top: 78px;}
+    .sig{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.16), rgba(0,0,0,.08));
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .sig::before{
+      content:"";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(246,210,122,.92);
+      box-shadow: 0 0 0 8px rgba(246,210,122,.14);
+      opacity: .95;
+    }
+    .chapter h2{margin:0; font-size: 18px; letter-spacing:.02em;}
+    .chapter p{margin: 10px 0 0; color: rgba(233,236,255,.74); line-height:1.9; font-size: 14px;}
+    .actions{display:flex; gap: 10px; flex-wrap:wrap; margin-top: 14px;}
+    .reveal{opacity:0; transform: translateY(10px);}
+    .is-active .reveal{animation: fadeUp .85s var(--ease) both;}
+    .oath{margin-top: 14px; display:grid; grid-template-columns: 1fr 1fr; gap: 10px;}
+    @media (max-width: 820px){.oath{grid-template-columns: 1fr;}}
+    .choice{
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+      transition: transform .18s var(--ease), border-color .18s var(--ease), background .18s var(--ease);
+      user-select:none;
+    }
+    .choice:hover{transform: translateY(-1px); border-color: rgba(255,255,255,.22)}
+    .choice strong{display:block; color: rgba(255,239,184,.92); letter-spacing:.02em}
+    .choice span{display:block; margin-top: 6px; color: rgba(233,236,255,.72); font-size: 13px; line-height:1.65}
+    .choice.is-picked{
+      border-color: rgba(255,239,184,.28);
+      background: radial-gradient(700px 220px at 20% 10%, rgba(255,239,184,.10), transparent 55%), rgba(255,255,255,.06);
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header id="top">
+    <div class="nav">
+      <div class="brand" aria-label="页面标题">
+        <div class="sigil" aria-hidden="true"></div>
+        <div>
+          <h1>登基盛典</h1>
+          <p class="sub">王睿 · 生动活力动画网页</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="pill" title="滚动触发分镜动画">
+          <span class="dot" aria-hidden="true"></span>
+          <span>滚动观看分镜</span>
+        </div>
+        <a class="btn" href="#story" style="display:inline-flex;align-items:center;justify-content:center">故事</a>
+        <button class="btn" id="btnBless" type="button">敲响贺钟</button>
+        <button class="btn" id="btnFinale" type="button">礼花加冕</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="card card-pad">
+        <h2 class="headline"><span>王睿登基</span> · 以光为冠</h2>
+        <p class="lead">这是一个分镜叙事页面：滚动即可触发进场、加冕、宣诏与庆典。视觉以金色光束、丝绸红、星辉粒子组成，节奏明快、动感十足。</p>
+        <div class="meta">
+          <span class="tag">分镜滚动</span>
+          <span class="tag">加冕动画</span>
+          <span class="tag">群臣欢呼</span>
+          <span class="tag">礼花粒子</span>
+          <span class="tag">低动态回退</span>
+        </div>
+        <div class="tip">
+          <div aria-hidden="true" style="width:18px;height:18px;border-radius:6px;background:linear-gradient(135deg, rgba(255,239,184,.9), rgba(163,140,255,.6));box-shadow:0 0 0 6px rgba(255,239,184,.12)"></div>
+          <div>
+            <div><b>玩法</b>：向下滚动进入各个场景；也可点右上按钮触发音效与礼花。</div>
+            <div style="margin-top:6px;color:rgba(233,236,255,.62);font-size:12px">如果你系统开启“减少动态效果”，页面会自动减弱动画。</div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="btnGo" type="button">从序章开始</button>
+          <a class="btn" href="#scene-2" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">跳到加冕</a>
+          <a class="btn" href="#story" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">阅读故事</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="stage-wrap" id="preview">
+          <div class="stage" aria-label="王睿登基舞台预览" role="img">
+            <div class="halo" aria-hidden="true"></div>
+            <div class="rays" aria-hidden="true"></div>
+            <div class="floor" aria-hidden="true"></div>
+
+            <div class="throne" aria-hidden="true">
+              <div class="back"></div>
+              <div class="seat"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="gem"></div>
+            </div>
+
+            <div class="king" aria-hidden="true" id="king">
+              <div class="head"></div>
+              <div class="body"></div>
+              <div class="sash"></div>
+            </div>
+
+            <div class="crown" aria-hidden="true" id="crown">
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="base"></div>
+              <div class="jewel"></div>
+            </div>
+
+            <div class="crowd" aria-hidden="true" id="crowd">
+              <div class="person" style="height:62%"></div>
+              <div class="person" style="height:70%"></div>
+              <div class="person" style="height:58%"></div>
+              <div class="person" style="height:74%"></div>
+              <div class="person" style="height:60%"></div>
+              <div class="person" style="height:68%"></div>
+              <div class="person" style="height:56%"></div>
+              <div class="person" style="height:72%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scroll" aria-label="分镜内容">
+      <section class="scene card" id="scene-1" data-scene="intro">
+        <div class="stage-wrap">
+          <div class="stage" aria-label="序章舞台" role="img">
+            <div class="halo" aria-hidden="true"></div>
+            <div class="rays" aria-hidden="true"></div>
+            <div class="floor" aria-hidden="true"></div>
+            <div class="throne" aria-hidden="true">
+              <div class="back"></div>
+              <div class="seat"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="gem"></div>
+            </div>
+            <div class="king" aria-hidden="true">
+              <div class="head"></div>
+              <div class="body"></div>
+              <div class="sash"></div>
+            </div>
+            <div class="crown" aria-hidden="true">
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="base"></div>
+              <div class="jewel"></div>
+            </div>
+            <div class="crowd" aria-hidden="true">
+              <div class="person" style="height:62%"></div>
+              <div class="person" style="height:70%"></div>
+              <div class="person" style="height:58%"></div>
+              <div class="person" style="height:74%"></div>
+              <div class="person" style="height:60%"></div>
+              <div class="person" style="height:68%"></div>
+              <div class="person" style="height:56%"></div>
+              <div class="person" style="height:72%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copy">
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>第一幕 · 序章</div>
+          <h2 class="fadeup">夜幕垂下，星光为路</h2>
+          <p class="fadeup">礼乐初起，金色光束从远处缓缓铺开。王座静候，万象屏息——一场新的纪元，即将被点亮。</p>
+          <div class="quote fadeup">“愿以清明立世，以勇毅开疆。”</div>
+          <div class="tagrow">
+            <span class="tag">光束</span>
+            <span class="tag">入场</span>
+            <span class="tag">氛围铺垫</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene card" id="scene-2" data-scene="coronation">
+        <div class="stage-wrap">
+          <div class="stage" aria-label="加冕舞台" role="img">
+            <div class="halo" aria-hidden="true"></div>
+            <div class="rays" aria-hidden="true"></div>
+            <div class="floor" aria-hidden="true"></div>
+            <div class="throne" aria-hidden="true">
+              <div class="back"></div>
+              <div class="seat"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="gem"></div>
+            </div>
+            <div class="king" aria-hidden="true">
+              <div class="head"></div>
+              <div class="body"></div>
+              <div class="sash"></div>
+            </div>
+            <div class="crown" aria-hidden="true">
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="base"></div>
+              <div class="jewel"></div>
+            </div>
+            <div class="crowd" aria-hidden="true">
+              <div class="person" style="height:62%"></div>
+              <div class="person" style="height:70%"></div>
+              <div class="person" style="height:58%"></div>
+              <div class="person" style="height:74%"></div>
+              <div class="person" style="height:60%"></div>
+              <div class="person" style="height:68%"></div>
+              <div class="person" style="height:56%"></div>
+              <div class="person" style="height:72%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copy">
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>第二幕 · 加冕</div>
+          <h2 class="fadeup">冠冕落下，王命昭彰</h2>
+          <p class="fadeup">王睿步入中央，王冠自光中落下，稳稳加于额前。金辉旋转，仿佛天地为证。</p>
+          <div class="quote fadeup">“此刻起，王睿登基。”</div>
+          <div class="tagrow">
+            <span class="tag">关键帧</span>
+            <span class="tag">王冠弹跳</span>
+            <span class="tag">光环</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene card" id="scene-3" data-scene="decree">
+        <div class="stage-wrap">
+          <div class="stage" aria-label="宣诏舞台" role="img">
+            <div class="halo" aria-hidden="true"></div>
+            <div class="rays" aria-hidden="true"></div>
+            <div class="floor" aria-hidden="true"></div>
+            <div class="throne" aria-hidden="true">
+              <div class="back"></div>
+              <div class="seat"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="gem"></div>
+            </div>
+            <div class="king" aria-hidden="true">
+              <div class="head"></div>
+              <div class="body"></div>
+              <div class="sash"></div>
+            </div>
+            <div class="crown" aria-hidden="true">
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="base"></div>
+              <div class="jewel"></div>
+            </div>
+            <div class="crowd" aria-hidden="true">
+              <div class="person" style="height:62%"></div>
+              <div class="person" style="height:70%"></div>
+              <div class="person" style="height:58%"></div>
+              <div class="person" style="height:74%"></div>
+              <div class="person" style="height:60%"></div>
+              <div class="person" style="height:68%"></div>
+              <div class="person" style="height:56%"></div>
+              <div class="person" style="height:72%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copy">
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>第三幕 · 宣诏</div>
+          <h2 class="fadeup">一纸新政，万民同心</h2>
+          <p class="fadeup">王座之后，光束更盛；群臣俯首，旗帜翻飞。此刻不必夸张词藻——行动与秩序，就是最响亮的宣言。</p>
+          <div class="quote fadeup">“以仁为本，以法为纲，以信为先。”</div>
+          <div class="tagrow">
+            <span class="tag">庄重</span>
+            <span class="tag">节奏推进</span>
+            <span class="tag">力量感</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="scene card" id="scene-4" data-scene="celebration">
+        <div class="stage-wrap">
+          <div class="stage" aria-label="庆典舞台" role="img">
+            <div class="halo" aria-hidden="true"></div>
+            <div class="rays" aria-hidden="true"></div>
+            <div class="floor" aria-hidden="true"></div>
+            <div class="throne" aria-hidden="true">
+              <div class="back"></div>
+              <div class="seat"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="gem"></div>
+            </div>
+            <div class="king" aria-hidden="true">
+              <div class="head"></div>
+              <div class="body"></div>
+              <div class="sash"></div>
+            </div>
+            <div class="crown" aria-hidden="true">
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="spike"></div>
+              <div class="base"></div>
+              <div class="jewel"></div>
+            </div>
+            <div class="crowd" aria-hidden="true">
+              <div class="person" style="height:62%"></div>
+              <div class="person" style="height:70%"></div>
+              <div class="person" style="height:58%"></div>
+              <div class="person" style="height:74%"></div>
+              <div class="person" style="height:60%"></div>
+              <div class="person" style="height:68%"></div>
+              <div class="person" style="height:56%"></div>
+              <div class="person" style="height:72%"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="copy">
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>终幕 · 庆典</div>
+          <h2 class="fadeup">群臣欢呼，礼花如雨</h2>
+          <p class="fadeup">鼓点加速、万众沸腾。礼花粒子从天际洒落，金色与蔚蓝交织，盛典在掌声中抵达高潮。</p>
+          <div class="quote fadeup">“新纪元开启——愿荣光与勇气同在。”</div>
+          <div class="tagrow">
+            <span class="tag">粒子礼花</span>
+            <span class="tag">欢呼节拍</span>
+            <span class="tag">收束高潮</span>
+          </div>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn" id="btnEncore" type="button">再来一次</button>
+            <a class="btn" href="#top" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center">回到顶部</a>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="card" id="story" aria-label="故事展示">
+      <div class="story-hero">
+        <div>
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>故事篇</div>
+          <h2 class="headline"><span>王睿登基</span>：从暗夜到金辉</h2>
+          <p class="lead">这是同一页内的“章节叙事”。你可以先看上面的动画分镜，再在这里读完整故事线：夜启、加冕、宣诏、庆典。</p>
+          <div class="chips" aria-label="故事要点">
+            <span class="chip">四章结构</span>
+            <span class="chip">时间线推进</span>
+            <span class="chip">誓言互动</span>
+            <span class="chip">沉浸阅读</span>
+          </div>
+          <div class="actions">
+            <a class="btn" href="#chapter-1">从第一章开始</a>
+            <a class="btn" href="#chapter-2">直达加冕</a>
+            <a class="btn" href="#chapter-4">直达庆典</a>
+          </div>
+        </div>
+
+        <div class="panel" aria-label="阅读提示">
+          <div class="kicker"><span class="kline" aria-hidden="true"></span>誓言选择</div>
+          <p class="lead" style="margin:0">点选一条誓言，页面会给你一句“登基回响”。</p>
+          <div class="oath" role="group" aria-label="誓言选择">
+            <div class="choice" data-oath="clear">
+              <strong>清明</strong>
+              <span>以清明立世，先定规矩，再定方向。</span>
+            </div>
+            <div class="choice" data-oath="brave">
+              <strong>勇毅</strong>
+              <span>以勇毅开疆，敢做难事，也敢担后果。</span>
+            </div>
+            <div class="choice" data-oath="benevolent">
+              <strong>仁治</strong>
+              <span>以仁为本，听得见民声，守得住底线。</span>
+            </div>
+            <div class="choice" data-oath="lawful">
+              <strong>法度</strong>
+              <span>以法为纲，权力有边界，秩序有方向。</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-pad">
+        <section class="timeline" aria-label="章节时间线">
+          <section class="chapter" id="chapter-1" data-chapter>
+            <div class="sig" aria-hidden="true"></div>
+            <div>
+              <div class="kicker"><span class="kline" aria-hidden="true"></span>第一章 · 夜启</div>
+              <h2 class="reveal">群星之下，众望汇聚</h2>
+              <p class="reveal">旧日的喧嚣逐渐退去，新的秩序需要一个名字来承载。王睿披着黄袍走近王座：不是被推上去，而是在选择承担。灯火如潮，仪仗渐近，鼓点把“即将发生”写进每个人的心跳。</p>
+              <div class="quote reveal">“万象可变，唯守信与担当不变。”</div>
+            </div>
+          </section>
+
+          <section class="chapter" id="chapter-2" data-chapter>
+            <div class="sig" aria-hidden="true"></div>
+            <div>
+              <div class="kicker"><span class="kline" aria-hidden="true"></span>第二章 · 加冕</div>
+              <h2 class="reveal">金冠落定，荣光成形</h2>
+              <p class="reveal">光束在穹顶交错，像把一条路铺到了中央。王冠并不只是装饰——它提醒所有人：权力的重量从此有了归处。王睿抬眼的一瞬间，场内安静到能听见旗面轻响；下一秒，万众同声，礼乐起落，时代翻页。</p>
+              <div class="quote reveal">“此刻起，王睿登基。”</div>
+            </div>
+          </section>
+
+          <section class="chapter" id="chapter-3" data-chapter>
+            <div class="sig" aria-hidden="true"></div>
+            <div>
+              <div class="kicker"><span class="kline" aria-hidden="true"></span>第三章 · 宣诏</div>
+              <h2 class="reveal">一言立纲，众心归一</h2>
+              <p class="reveal">宣诏不是高声，而是清晰。王睿用简洁的话把未来的边界和方向交代给每一个人：该奖赏什么、该惩戒什么、该如何对待承诺与背离。台阶之下，群臣俯首；台阶之上，王座不再只属于一个人，而属于一套规则。</p>
+              <div class="quote reveal">“以仁为本，以法为纲，以信为先。”</div>
+            </div>
+          </section>
+
+          <section class="chapter" id="chapter-4" data-chapter>
+            <div class="sig" aria-hidden="true"></div>
+            <div>
+              <div class="kicker"><span class="kline" aria-hidden="true"></span>第四章 · 庆典</div>
+              <h2 class="reveal">礼花如雨，欢呼如潮</h2>
+              <p class="reveal">庆典不是终点，而是“开始被记住”的时刻。礼花落下，金色与蔚蓝交织；人群的欢呼像一阵风，掠过每一面旗帜。王睿在掌声里回望：真正的盛典不在灯火，而在明日的执行与兑现。</p>
+              <div class="quote reveal">“新纪元开启——愿荣光与勇气同在。”</div>
+              <div class="actions" style="margin-top:12px">
+                <a class="btn" href="#scene-2">回到加冕动画</a>
+                <a class="btn" href="#top">回到顶部</a>
+              </div>
+            </div>
+          </section>
+        </section>
+      </div>
+    </section>
+
+    <div class="footer">打开即用：无需依赖、无需构建。你也可以把人物名称、台词、配色替换成你想要的版本。</div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const toastEl = document.getElementById('toast');
+    let toastTimer = null;
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+    }
+
+    function smoothTo(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      el.scrollIntoView({behavior: prefersReduced ? 'auto' : 'smooth', block: 'start'});
+    }
+
+    document.getElementById('btnGo').addEventListener('click', () => smoothTo('scene-1'));
+
+    const scenes = Array.from(document.querySelectorAll('.scene'));
+
+    function setSceneActive(scene, active){
+      if(active){
+        scene.classList.add('is-active');
+      }else{
+        scene.classList.remove('is-active');
+        scene.classList.remove('is-cheering');
+      }
+    }
+
+    const io = new IntersectionObserver((entries) => {
+      for(const e of entries){
+        if(e.isIntersecting){
+          setSceneActive(e.target, true);
+          const name = e.target.getAttribute('data-scene');
+          if(name === 'celebration'){
+            e.target.classList.add('is-cheering');
+            if(!prefersReduced) burst(0.55, 0.16, 70);
+          }
+          if(name === 'coronation'){
+            if(!prefersReduced) burst(0.50, 0.10, 36);
+          }
+        }else{
+          setSceneActive(e.target, false);
+        }
+      }
+    }, {threshold: 0.42});
+
+    scenes.forEach(s => io.observe(s));
+
+    const preview = document.getElementById('preview');
+    const king = document.getElementById('king');
+    const crown = document.getElementById('crown');
+    const crowd = document.getElementById('crowd');
+
+    function animatePreview(){
+      preview.classList.add('is-active');
+      crowd.classList.add('is-cheering');
+      if(!prefersReduced) burst(0.58, 0.14, 60);
+      setTimeout(() => crowd.classList.remove('is-cheering'), 1800);
+    }
+
+    let previewDone = false;
+    const io2 = new IntersectionObserver((entries) => {
+      for(const e of entries){
+        if(e.isIntersecting && !previewDone){
+          previewDone = true;
+          animatePreview();
+        }
+      }
+    }, {threshold: 0.55});
+    io2.observe(preview);
+
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+
+    function resize(){
+      const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+      canvas.width = Math.floor(window.innerWidth * dpr);
+      canvas.height = Math.floor(window.innerHeight * dpr);
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    window.addEventListener('resize', resize, {passive:true});
+    resize();
+
+    let particles = [];
+    let raf = 0;
+
+    const palette = [
+      'rgba(246,210,122,.95)',
+      'rgba(255,239,184,.95)',
+      'rgba(163,140,255,.90)',
+      'rgba(90,220,255,.85)',
+      'rgba(216,59,59,.85)'
+    ];
+
+    function rand(min, max){return Math.random() * (max - min) + min;}
+
+    function burst(xN, yN, count){
+      if(prefersReduced) return;
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const x = w * xN;
+      const y = h * yN;
+
+      for(let i=0;i<count;i++){
+        const angle = rand(-Math.PI, 0);
+        const speed = rand(3.6, 9.2);
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed + rand(-1.6, 1.6),
+          vy: Math.sin(angle) * speed - rand(1.2, 2.2),
+          g: rand(0.10, 0.18),
+          s: rand(3, 7),
+          rot: rand(0, Math.PI * 2),
+          vr: rand(-0.22, 0.22),
+          life: rand(50, 95),
+          c: palette[(Math.random() * palette.length) | 0],
+          shape: Math.random() < 0.6 ? 'rect' : 'tri'
+        });
+      }
+
+      if(!raf) raf = requestAnimationFrame(tick);
+    }
+
+    function tick(){
+      raf = 0;
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+
+      const next = [];
+      for(const p of particles){
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.g * 60/60;
+        p.rot += p.vr;
+        p.life -= 1;
+
+        const alpha = Math.max(0, Math.min(1, p.life / 90));
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.c;
+
+        if(p.shape === 'rect'){
+          ctx.fillRect(-p.s/2, -p.s/2, p.s, p.s * 0.7);
+        }else{
+          ctx.beginPath();
+          ctx.moveTo(0, -p.s * 0.6);
+          ctx.lineTo(p.s * 0.55, p.s * 0.55);
+          ctx.lineTo(-p.s * 0.55, p.s * 0.55);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.restore();
+
+        if(p.life > 0 && p.y < window.innerHeight + 30){
+          next.push(p);
+        }
+      }
+      particles = next;
+      if(particles.length){
+        raf = requestAnimationFrame(tick);
+      }
+    }
+
+    let audioCtx = null;
+    function bell(){
+      if(prefersReduced){
+        toast('已触发：贺钟（减少动态模式）');
+        return;
+      }
+
+      if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      const now = audioCtx.currentTime;
+      const o1 = audioCtx.createOscillator();
+      const o2 = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      const f = audioCtx.createBiquadFilter();
+
+      f.type = 'lowpass';
+      f.frequency.value = 1400;
+
+      o1.type = 'sine';
+      o2.type = 'triangle';
+      o1.frequency.setValueAtTime(528, now);
+      o2.frequency.setValueAtTime(264, now);
+
+      g.gain.setValueAtTime(0.0001, now);
+      g.gain.exponentialRampToValueAtTime(0.35, now + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+      o1.connect(f); o2.connect(f);
+      f.connect(g);
+      g.connect(audioCtx.destination);
+
+      o1.start(now);
+      o2.start(now);
+      o1.stop(now + 1.0);
+      o2.stop(now + 1.0);
+
+      burst(0.50, 0.12, 44);
+      toast('贺钟响起：登基之礼更近一步');
+    }
+
+    function finale(){
+      burst(0.26, 0.20, 60);
+      burst(0.50, 0.18, 90);
+      burst(0.74, 0.22, 60);
+      toast('礼花加冕：荣光四起');
+      const last = document.getElementById('scene-4');
+      if(last) last.classList.add('is-cheering');
+      setTimeout(() => last && last.classList.remove('is-cheering'), 1800);
+    }
+
+    document.getElementById('btnBless').addEventListener('click', bell);
+    document.getElementById('btnFinale').addEventListener('click', finale);
+    document.getElementById('btnEncore').addEventListener('click', () => {
+      smoothTo('scene-2');
+      setTimeout(finale, prefersReduced ? 0 : 500);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if(e.key === 'f' || e.key === 'F') finale();
+      if(e.key === 'b' || e.key === 'B') bell();
+    });
+
+    const choices = Array.from(document.querySelectorAll('.choice'));
+    const oathLines = {
+      clear: '登基回响：清明如镜，先把规则写在光里。',
+      brave: '登基回响：勇毅如锋，敢于开路也敢于收束。',
+      benevolent: '登基回响：仁治如暖，先护住人心再谈远方。',
+      lawful: '登基回响：法度如尺，所有权力都应有边界。'
+    };
+
+    choices.forEach(c => {
+      c.addEventListener('click', () => {
+        choices.forEach(x => x.classList.remove('is-picked'));
+        c.classList.add('is-picked');
+        const key = c.getAttribute('data-oath');
+        toast(oathLines[key] || '登基回响：愿你所选，皆成可执行的明日。');
+      });
+    });
+
+    const chapters = Array.from(document.querySelectorAll('[data-chapter]'));
+    function setChapterActive(ch, active){
+      if(active) ch.classList.add('is-active');
+      else ch.classList.remove('is-active');
+    }
+
+    const ioCh = new IntersectionObserver((entries) => {
+      for(const e of entries){
+        setChapterActive(e.target, e.isIntersecting);
+      }
+    }, {threshold: 0.35});
+
+    chapters.forEach(ch => ioCh.observe(ch));
+
+    toast('提示：滚动触发分镜；按 B 敲钟，按 F 放礼花；下滑可阅读故事章节');
+  </script>
+</body>
+</html>
